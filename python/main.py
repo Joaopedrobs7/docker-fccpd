@@ -9,12 +9,15 @@ def main():
     cursor = connection.cursor()
     
     #itens do armazem
+    print("Tabela Armazem:")
     printar(cursor,"armazem")
 
     #funcionarios na empresa
+    print("Tabela Funcionarios:")
     printar(cursor,"funcionarios")
     
     #servicos
+    print("Tabela Servicos:")
     printar(cursor,"servicos")
     
     #FAZER O MENU
@@ -23,7 +26,23 @@ def main():
         choice = int(input("Escolha: "))
         match choice:
             case 1:
+                print("TABELA ORIGINAL:")
                 printar(cursor,"servicos")
+                
+                #fazer join
+                query = '''
+                    SELECT servicos.cliente, servicos.descricao, funcionarios.nome as funcionario, armazem.Item as material
+                    FROM servicos 
+                    JOIN funcionarios ON funcionarios.ID = servicos.FuncionarioID
+                    JOIN armazem ON armazem.ItemID = servicos.ItemID
+                '''
+
+                print("TABELA COM JOIN:")
+                cursor.execute(query)
+                join = cursor.fetchall()
+                colunas = [desc[0] for desc in cursor.description]
+                print(tabulate(join, headers=colunas, tablefmt="fancy_grid"))
+                
             case 2:
                 cliente = str(input("Nome Do cliente:"))
                 descricao = str(input("Descricao do Servico:"))
@@ -53,7 +72,20 @@ def main():
             case 4:
                 choice = int(input("1-Ver Funcionarios\n2-Adicionar Funcionario\n"))
                 if (choice == 1):
+                    print("TABELA ORIGINAL:")
                     printar(cursor,"funcionarios")
+                    
+                    #Fazer Join
+                    query = '''
+                    SELECT funcionarios.nome, funcionarios.trabalhando, servicos.descricao
+                    FROM funcionarios 
+                    JOIN servicos ON funcionarios.ID = servicos.FuncionarioID
+                '''
+                    print("TABELA COM JOIN:")
+                    cursor.execute(query)
+                    join = cursor.fetchall()
+                    colunas = [desc[0] for desc in cursor.description]
+                    print(tabulate(join, headers=colunas, tablefmt="fancy_grid"))
 
                 elif (choice == 2):
                     nome_funcionario = str(input("Nome do Funcionario:"))
@@ -94,7 +126,7 @@ def main():
 def printar(cursor,tabela):
     cursor.execute(f'SELECT * FROM {tabela}')
     armazem = cursor.fetchall()
-    print("TABELA ITENS:")
+    #print("TABELA ITENS:")
     #print(armazem)
     colunas = [desc[0] for desc in cursor.description]
     print(tabulate(armazem,headers= colunas,tablefmt="fancy_grid"))
