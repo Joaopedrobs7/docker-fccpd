@@ -38,10 +38,6 @@ docker-compose run pythonapp
 ------------------
 Executar apenas Container SQL:
 ```bash
-docker run -d --name container-sql mysql:latest
-```
-
-```bash
-docker exec -it container-sql mysql -uroot -proot
+docker exec -it docker-fccpd-mysql-1 mysql -uroot -proot
 ```
 
